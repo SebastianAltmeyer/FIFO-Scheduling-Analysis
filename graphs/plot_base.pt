@@ -14,9 +14,9 @@ set ylabel "Schedulable Tasksets"
 
 set xrange [0:1]
 
-plot  '../results/res_FIFO_OFFSETS_OPT' using 1:2 title "FIFO opt. offsets" lw 3, \
-		'../results/res_FIFO_OFFSETS' using 1:2  title "FIFO given offsets" lw 3, \
-		'../results/res_FIFO_NO' using 1:2 title "FIFO aperiodic" lw 3, \
-		'../results/res_FPNS_OFFSETS_OPT' using 1:2  title "FPNS opt. offsets" lw 3, \
-		'../results/res_FPNS_OFFSETS' using 1:2  title "FPNS with offsets" lw 3, \
-		'../results/res_FPNS_NO' using 1:2 title "FPNS aperiodic" lw 3
+plot  '../results/resBase_random_FIFO_OFFSETS_OPT' using 1:2 title "FIFO opt. offsets" lw 3, \
+		'../results/resBase_random_FIFO_OFFSETS' using 1:2  title "FIFO given offsets" lw 3, \
+		'../results/resBase_random_FIFO_NO' using 1:2 title "FIFO aperiodic" lw 3, \
+		'../results/resBase_random_FPNS_OFFSETS_OPT' using 1:2  title "FPNS opt. offsets" lw 3, \
+		'../results/resBase_random_FPNS_OFFSETS' using 1:2  title "FPNS with offsets" lw 3, \
+		'../results/resBase_random_FPNS_NO' using 1:2 title "FPNS aperiodic" lw 3
