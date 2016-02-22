@@ -30,6 +30,8 @@ int AnalysisFIFO::analyse (Taskset &taskset) {
 		}
 	}
   
+  
+	delete[] _rt;
 	return 0;
 }
 

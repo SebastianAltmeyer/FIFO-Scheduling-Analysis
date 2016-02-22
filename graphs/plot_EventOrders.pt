@@ -1,0 +1,46 @@
+set terminal pdf size 5,3.75
+set output 'nrOrdersLHarmonic.pdf'
+
+set xtics rotate out
+set style data histogram 
+set style fill solid border -1
+set style histogram cluster gap 1
+set boxwidth 0.75
+
+set key top left
+
+set xtics nomirror out
+set ytics nomirror out
+set border 3
+
+set xlabel "Task Utilization"
+set ylabel "# of different event orders" 
+
+set yrange [0:50]
+set boxwidth 1 relative
+
+plot for [COL=2:4] '../results/resultsEO_lHarmonic_FIFO' using COL:xticlabels(1) title columnheader
+
+
+set terminal pdf size 5,3.75
+set output 'nrOrdersHarmonic.pdf'
+
+set xtics rotate out
+set style data histogram 
+set style fill solid border -1
+set style histogram cluster gap 1
+set boxwidth 0.75
+
+set key top left
+
+set xtics nomirror out
+set ytics nomirror out
+set border 3
+
+set xlabel "Task Utilization"
+set ylabel "# of different event orders" 
+
+set yrange [0:400]
+set boxwidth 1 relative
+
+plot for [COL=2:4] '../results/resultsEO_harmonic_FIFO' using COL:xticlabels(1) title columnheader

@@ -1,5 +1,8 @@
--taskSets  100
--nrOfTasks 5
+-taskSets  1000
+-nrOfTasks 10
 -o results/res
 -utilStart 0.0
 -utilEnd 1
+-gran 100
+-opt 1000
+-oom 3

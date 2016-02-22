@@ -1,23 +1,18 @@
 #!/bin/sh
 
-DEFAULTRESULT="../output/resultBase"
+DEFAULTTASKSETS="1000"
 
-DEFAULTNROFTASKS="5"
-DEFAULTTASKSETS="100"
-
-echo "Compute Results for base configuration"
-
-for PERIODTYPE in "random" "looselyHarmoic" "harmonic" 
+for PERIODTYPE in "random" "lHarmonic" "harmonic" 
 do
-	WENAME=../results/resBase_$PERIODTYPE"_oom_we"
+	WENAME=../results/res_$PERIODTYPE"_oom_we"
 
 	echo ""  > $WENAME 
 	
-	for OOM in 2 4 6 8 10 12 16 20
+	for OOM in 1 2 3 4 5
 	do
-		../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -periodType $PERIODTYPE -opt 1000 -oom $OOM -o ../tmp/resBase_$PERIODTYPE"_"$OOM 
+		../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -periodType $PERIODTYPE -opt 1000 -oom $OOM -o ../tmp/res_$PERIODTYPE"_OOM"$OOM 
 
-		FILENAME=../tmp/resBase_$PERIODTYPE"_"$OOM"_we"
+		FILENAME=../tmp/res_$PERIODTYPE"_OOM"$OOM"_we"
 		TEMPFile=../tmp/tmp
 		
 		echo $OOM  > $TEMPFile 

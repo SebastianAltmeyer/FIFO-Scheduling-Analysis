@@ -1,17 +1,13 @@
 #!/bin/sh
 
-DEFAULTRESULT="../output/resultBase"
-
-DEFAULTNROFTASKS="5"
-DEFAULTTASKSETS="100"
+DEFAULTTASKSETS="10000"
 
 echo "Compute Results for base configuration"
 
-for PERIODTYPE in "random" "looselyHarmoic" "harmonic" 
+for PERIODTYPE in "lHarmonic" "harmonic" "random" 
 do
 
-	../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -nrOfTasks $DEFAULTNROFTASKS -periodType $PERIODTYPE -opt 1000 -oom 2 -o ../results/resBase_$PERIODTYPE
-
+	../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -periodType $PERIODTYPE -opt 1000  -o ../results/results_$PERIODTYPE -v
 done
 
 echo "Done"

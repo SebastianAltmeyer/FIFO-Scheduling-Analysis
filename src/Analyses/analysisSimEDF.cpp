@@ -1,10 +1,10 @@
-#include "Analyses/analysisSim.h"
+#include "Analyses/analysisSimEDF.h"
 
-AnalysisSim::AnalysisSim() {_schedulable = true;}
+AnalysisSimEDF::AnalysisSimEDF() {_schedulable = true;}
 
-AnalysisSim::~AnalysisSim() {}
+AnalysisSimEDF::~AnalysisSimEDF() {}
 
-int AnalysisSim::analyse (Taskset &taskset) {
+int AnalysisSimEDF::analyse (Taskset &taskset) {
 	
 	_rt = new longint_t[taskset.getSize()];
 	_taskSet = &taskset;
@@ -17,7 +17,7 @@ int AnalysisSim::analyse (Taskset &taskset) {
 }
 
 
-int AnalysisSim::simulate () {
+int AnalysisSimEDF::simulate () {
 
 	longint_t hyperPeriod;
 	if (!_taskSet->computeHyperperiod()) { 
@@ -122,7 +122,7 @@ int AnalysisSim::simulate () {
 
   
 
-int AnalysisSim::simulate(Taskset &taskset, float rtFactor, std::vector<int> &order, longint_t length) {
+int AnalysisSimEDF::simulate(Taskset &taskset, float rtFactor, std::vector<int> &order, longint_t length) {
 
 	_taskSet = &taskset;
 			

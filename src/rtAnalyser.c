@@ -6,6 +6,8 @@
 #include "taskset.h"
 #include "analysis.h"
 #include "Analyses/analysisSim.h"
+#include "Analyses/analysisSimFPNS.h"
+#include "Analyses/analysisSimEDF.h"
 #include "Analyses/analysisFPPS.h"
 #include "Analyses/analysisFPNS.h"
 #include "Analyses/analysisFIFOsim.h"
@@ -91,7 +93,11 @@ bool randomizeOffsets(Config &conf, Analysis &analysis, Taskset &ts) {
 	while(runs > 0 && !isSchedulable) {
 				
 		for (int i = 0; i < ts.getSize(); i++) { 
-			ts.setOffset(i,rand() % ts.getPeriod(i)); 
+			
+			int granularity = std::max(conf.getOOF()/10,1);
+			
+			int newOffset = ((rand() % ts.getPeriod(i))/granularity)*granularity;
+			ts.setOffset(i,newOffset); 
 		}
 
 // 		std::cout << " New try:" << std::endl;
@@ -156,28 +162,7 @@ int analyseTaskSet(Config &conf, Statistics &stats, Taskset &ts) {
 	} else {
 		if (VERBOSE > 1) {std::cout << " Taskset \'" << ts.getName() <<  "\' is NOT schedulable with FPNS!" << std::endl;}
 	}
-	stats.FPNS_NO += analysisFPNS.isSchedulable();
-
-
-	AnalysisFPNS analysisFPNS_OFFSETS;
-	if (analysisFPNS_OFFSETS.analyse(ts)) { std::cerr << "Error: FPNS analysis failed." << std::endl; return 1;
-	} else { if (VERBOSE > 2) std::cout << " ResponseTimeAnalysis done." << std::endl; }
-	
-	if (analysisFPNS_OFFSETS.isSchedulable()) {
-		if (VERBOSE > 1) {std::cout << " Taskset \'" << ts.getName() <<  "\' is schedulable with FPNS!" << std::endl;}
-	} else {
-		if (VERBOSE > 1) {std::cout << " Taskset \'" << ts.getName() <<  "\' is NOT schedulable with FPNS!" << std::endl;}
-	}
-	stats.FPNS_OFFSETS += analysisFPNS_OFFSETS.isSchedulable();
-
-	AnalysisFPNS analysisFPNS_OFFSETS_OPT;
-	bool FPNS_OFFSETS_OPT = optimizeOffsets(conf, analysisFPNS_OFFSETS_OPT, ts);
-	if (FPNS_OFFSETS_OPT) {
-		if (VERBOSE > 1) {std::cout << " Taskset \'" << ts.getName() <<  "\' is schedulable with FPNS, opt Offset!" << std::endl;}
-	} else {
-		if (VERBOSE > 1) {std::cout << " Taskset \'" << ts.getName() <<  "\' is NOT schedulable with FPNS, opt Offset!" << std::endl;}
-	}
-	stats.FPNS_OFFSETS_OPT += FPNS_OFFSETS_OPT;
+	stats.FPNS += analysisFPNS.isSchedulable();
 	
 	AnalysisFIFOsim analysisFIFO;
 	if (analysisFIFO.analyse(ts)) { std::cerr << "Error: FPNS analysis failed." << std::endl; return 1;
@@ -236,9 +221,7 @@ int analyseConfiguration(Config &conf) {
 				outFIFO_OFFSETS,
 				outFIFO_NO,
 				outFIFO_SIM,
-				outFPNS_OFFSETS_OPT,
-				outFPNS_OFFSETS,
-				outFPNS_NO,
+				outFPNS,
 				outWE;
 
 	outFPPS = conf.getOutFile() + "_FPPS";
@@ -248,9 +231,7 @@ int analyseConfiguration(Config &conf) {
 	outFIFO_NO = conf.getOutFile() + "_FIFO_NO";
 	outFIFO_SIM  = conf.getOutFile() + "_FIFO_SIM";
 	
-	outFPNS_OFFSETS_OPT = conf.getOutFile() + "_FPNS_OFFSETS_OPT";
-	outFPNS_OFFSETS = conf.getOutFile() + "_FPNS_OFFSETS";
-	outFPNS_NO = conf.getOutFile() + "_FPNS_NO";
+	outFPNS = conf.getOutFile() + "_FPNS";
 	
 	outWE = conf.getOutFile() + "_we";
 
@@ -261,9 +242,7 @@ int analyseConfiguration(Config &conf) {
 	std::ofstream outFileFIFO_NO (outFIFO_NO.c_str(),mode);
 	std::ofstream outFileFIFO_SIM (outFIFO_SIM.c_str(),mode);
 	
-	std::ofstream outFileFPNS_OFFSETS_OPT (outFPNS_OFFSETS_OPT.c_str(),mode);
-	std::ofstream outFileFPNS_OFFSETS (outFPNS_OFFSETS.c_str(),mode);
-	std::ofstream outFileFPNS_NO (outFPNS_NO.c_str(),mode);
+	std::ofstream outFileFPNS (outFPNS.c_str(),mode);
 	
 	std::ofstream outFileWE (outWE.c_str(),mode);
 	
@@ -274,9 +253,7 @@ int analyseConfiguration(Config &conf) {
 	float W_FIFO_NO = 0;
 	float W_FIFO_SIM = 0;
 
-	float W_FPNS_OFFSETS_OPT = 0;
-	float W_FPNS_OFFSETS = 0;
-	float W_FPNS_NO = 0;
+	float W_FPNS = 0;
 
 	float UtilSum = 0;
 
@@ -294,9 +271,7 @@ int analyseConfiguration(Config &conf) {
 		stats.FIFO_NO = 0;
 		stats.FIFO_SIM = 0;
 
-		stats.FPNS_OFFSETS_OPT = 0;
-		stats.FPNS_OFFSETS = 0;
-		stats.FPNS_NO = 0;
+		stats.FPNS = 0;
 		
 		int maxRuns = conf.getNrOfTaskSets();
 
@@ -323,9 +298,7 @@ int analyseConfiguration(Config &conf) {
 		outFileFIFO_NO << util << " " << stats.FIFO_NO << std::endl;
 		outFileFIFO_SIM << util << " " << stats.FIFO_SIM << std::endl;
 
-		outFileFPNS_OFFSETS_OPT << util << " " << stats.FPNS_OFFSETS_OPT << std::endl;
-		outFileFPNS_OFFSETS << util << " " << stats.FPNS_OFFSETS << std::endl;
-		outFileFPNS_NO << util << " " << stats.FPNS_NO << std::endl;
+		outFileFPNS << util << " " << stats.FPNS << std::endl;
 		
 		W_FPPS += ((float)stats.FPPS/(float)maxRuns)*util;
 		
@@ -334,9 +307,7 @@ int analyseConfiguration(Config &conf) {
 		W_FIFO_NO += ((float)stats.FIFO_NO/(float)maxRuns)*util;
 		W_FIFO_SIM += ((float)stats.FIFO_SIM/(float)maxRuns)*util;
 		
-		W_FPNS_OFFSETS_OPT += ((float)stats.FPNS_OFFSETS_OPT/(float)maxRuns)*util;
-		W_FPNS_OFFSETS += ((float)stats.FPNS_OFFSETS/(float)maxRuns)*util;
-		W_FPNS_NO += ((float)stats.FPNS_NO/(float)maxRuns)*util;
+		W_FPNS += ((float)stats.FPNS/(float)maxRuns)*util;
 		
 		UtilSum += util;
 		
@@ -349,9 +320,7 @@ int analyseConfiguration(Config &conf) {
 	W_FIFO_NO /= UtilSum;
 	W_FIFO_SIM /= UtilSum;
 	
-	W_FPNS_OFFSETS_OPT /= UtilSum;
-	W_FPNS_OFFSETS /= UtilSum;
-	W_FPNS_NO /= UtilSum;
+	W_FPNS /= UtilSum;
 	
 	if (VERBOSE > -1)
 	std::cout << "Weighted Measure:  " << std::endl
@@ -360,11 +329,17 @@ int analyseConfiguration(Config &conf) {
 				<< "FIFO Offset:     " << W_FIFO_OFFSETS << std::endl
 				<< "FIFO No Offset:  " << W_FIFO_NO  << std::endl
 				<< "FIFO Sim.:       " << W_FIFO_SIM  << std::endl
-				<< "FPNS Offset Opt: " << W_FPNS_OFFSETS_OPT << std::endl
-				<< "FPNS Offset:     " << W_FPNS_OFFSETS << std::endl
-				<< "FPNS No Offset:  " << W_FPNS_NO << std::endl;
+				<< "FPNS:            " << W_FPNS << std::endl;
 				
-	outFileWE << W_FPPS  << " " << W_FIFO_OFFSETS_OPT << " " << W_FIFO_OFFSETS  << " " << W_FIFO_NO  << " " << W_FIFO_SIM  << " " << W_FPNS_OFFSETS_OPT<< " " << W_FPNS_OFFSETS << " " << W_FPNS_NO;
+	outFileWE << W_FPPS  << " " << W_FIFO_OFFSETS_OPT << " " << W_FIFO_OFFSETS  << " " << W_FIFO_NO  << " " << W_FIFO_SIM  << " " << W_FPNS;
+	
+	outFileWE.close();
+	outFileFPPS.close();
+	outFileFIFO_OFFSETS_OPT.close();
+	outFileFIFO_OFFSETS.close();
+	outFileFIFO_NO.close();
+	outFileFIFO_SIM.close();
+	outFileFPNS.close();
 	
 	return 0;
 }
@@ -381,9 +356,7 @@ int analyseExample(Config &conf) {
 	stats.FIFO_NO = 0;
 	stats.FIFO_SIM = 0;
 
-	stats.FPNS_OFFSETS_OPT = 0;
-	stats.FPNS_OFFSETS = 0;
-	stats.FPNS_NO = 0;
+	stats.FPNS = 0;
 
 	Taskset ts;	
 	conf.fillTaskSet(ts);
@@ -394,6 +367,147 @@ int analyseExample(Config &conf) {
 	return 0;
 }
 
+int analyseEventOrders(Config &conf) {
+
+	std::ios_base::openmode mode = std::ios::out;
+	
+	std::string outFPNS,
+				outEDF,
+				outFIFO;
+
+	outFPNS = conf.getOutFile() + "_FPNS";
+	outEDF = conf.getOutFile() + "_EDF";
+	outFIFO = conf.getOutFile() + "_FIFO";
+
+	std::ofstream outFileFPNS (outFPNS.c_str(),mode);
+	std::ofstream outFileEDF (outEDF.c_str(),mode);
+	std::ofstream outFileFIFO (outFIFO.c_str(),mode);
+	
+	outFileFIFO << "Utilization FIFO EDF-NP FPNS" << std::endl;
+	
+	if (VERBOSE > -1)
+		std::cout << "Start Analysis." << std::endl;
+	
+	for (float util = conf.getUtilStart(); util <= conf.getUtilEnd(); util += conf.getUtilStep()) {
+		
+		if (VERBOSE > 0) {std::cout << " Analyse task set utilization = \'" << util <<  "." << std::endl;}
+		
+		float averageSetSizeFPNS = 0;
+		long unsigned int minSetSizeFPNS = std::numeric_limits<long unsigned int>::max();
+		long unsigned int maxSetSizeFPNS= 0;
+		
+		float averageSetSizeEDF = 0;
+		long unsigned int minSetSizeEDF = std::numeric_limits<long unsigned int>::max();
+		long unsigned int maxSetSizeEDF = 0;
+
+		float averageSetSizeFIFO = 0;
+		long unsigned int minSetSizeFIFO = std::numeric_limits<long unsigned int>::max();
+		long unsigned int maxSetSizeFIFO = 0;
+
+		for (int tsIndex = 0; tsIndex < conf.getNrOfTaskSets(); tsIndex++) {
+			Taskset ts;
+		
+			std::stringstream sstream;  
+			sstream << "T-" << tsIndex << "-" << util;
+
+			srand(conf.getSeed()+tsIndex);
+			conf.genTaskSet(ts, sstream.str(), util);
+			
+			if (VERBOSE>1) ts.print();
+
+			std::set<std::vector<int> > eventOrderSetEDF;
+			std::set<std::vector<int> > eventOrderSetFPNS;
+			std::set<std::vector<int> > eventOrderSetFIFO;
+			
+			for (int runs = 0; runs < conf.getSimulationRuns(); runs++) {
+				
+				std::vector<int> orderEDF;
+				std::vector<int> orderFIFO;
+				std::vector<int> orderFPNS;
+				
+				longint_t length;
+				if (conf.getSimulLength() <= 0) {
+					ts.computeHyperperiod();
+					
+					longint_t hyperperiod = ts.getHyperperiod();
+					length = 0;
+					
+// 					std::cout << " START" << hyperperiod << std::endl;
+					
+					for (int i = 0; i < ts.getSize(); i++) {
+// 						std::cout << "hyperperiod: "<< hyperperiod << " length " << length << " ceil(float(hyperperiod)/float(ts.getPeriod(i))): " << ceil(float(hyperperiod)/float(ts.getPeriod(i))) << std::endl;
+						length += ceil(float(hyperperiod)/float(ts.getPeriod(i)));
+					}
+					length *= 2;
+// 					std::cout << "hyperperiod: "<< hyperperiod << " length " << length << std::endl;
+				} else {
+					length = conf.getSimulLength();
+				}
+				
+				float rtFactor = conf.getRTFactor();
+				
+// 				std::cout << std::endl << "Begin FIFO run "<<  runs << "Setsize: " << eventOrderSetFIFO.size() << std::endl;
+				AnalysisSim simulatorFIFO;
+				simulatorFIFO.simulate(ts, rtFactor, orderFIFO, length);
+				eventOrderSetFIFO.insert(orderFIFO);
+// 				std::cout << "End FIFO run "<<  runs << "Setsize: " << eventOrderSetFIFO.size() << std::endl;
+				
+// 				std::cout << std::endl << "Begin FPNS run "<<  runs << "Setsize: " << eventOrderSetFPNS.size() << std::endl;
+				AnalysisSimFPNS simulatorFPNS;
+				simulatorFPNS.simulate(ts, rtFactor, orderFPNS, length);
+				eventOrderSetFPNS.insert(orderFPNS);
+// 				std::cout << "End FPNS run "<<  runs << "Setsize: " << eventOrderSetFPNS.size() << std::endl;
+				
+// 				std::cout << std::endl << "Begin EDF run "<<  runs << "Setsize: " << eventOrderSetEDF.size() << std::endl;
+				AnalysisSimEDF simulatorEDF;
+				simulatorEDF.simulate(ts, rtFactor, orderEDF, length);
+				eventOrderSetEDF.insert(orderEDF);
+// 				std::cout << "End EDF run "<<  runs << "Setsize: " << eventOrderSetEDF.size() << std::endl;
+			}
+			
+			
+			averageSetSizeFPNS += eventOrderSetFPNS.size();
+			minSetSizeFPNS = std::min(eventOrderSetFPNS.size(), minSetSizeFPNS);
+			maxSetSizeFPNS = std::max(eventOrderSetFPNS.size(), maxSetSizeFPNS);
+
+			averageSetSizeEDF += eventOrderSetEDF.size();
+			minSetSizeEDF = std::min(eventOrderSetEDF.size(), minSetSizeEDF);
+			maxSetSizeEDF = std::max(eventOrderSetEDF.size(), maxSetSizeEDF);
+
+			assert(eventOrderSetFIFO.size() == 1);
+			
+			averageSetSizeFIFO += eventOrderSetFIFO.size();
+			minSetSizeFIFO = std::min(eventOrderSetFIFO.size(), minSetSizeFIFO);
+			maxSetSizeFIFO = std::max(eventOrderSetFIFO.size(), maxSetSizeFIFO);
+			
+		}
+		
+		averageSetSizeFPNS /=  conf.getNrOfTaskSets();
+		averageSetSizeEDF /=  conf.getNrOfTaskSets();
+		averageSetSizeFIFO /=  conf.getNrOfTaskSets();
+		
+		outFileFPNS << util << " " << averageSetSizeFPNS << " " << minSetSizeFPNS << " " << maxSetSizeFPNS << std::endl;
+		outFileEDF << util << " " << averageSetSizeEDF << " " << minSetSizeEDF << " " << maxSetSizeEDF << std::endl;
+		outFileFIFO << util << " " << 1 << " " << averageSetSizeEDF <<  " " << averageSetSizeFPNS << std::endl;
+		
+	}
+
+	outFileFIFO.close();
+	outFileFPNS.close();
+	outFileEDF.close();
+	
+// 	if (VERBOSE > -1)
+// 	std::cout << "Weighted Measure:  " << std::endl
+// 				<< "FPPS:            " << W_FPPS  << std::endl
+// 				<< "FIFO Offset Opt: " << W_FIFO_OFFSETS_OPT << std::endl
+// 				<< "FIFO Offset:     " << W_FIFO_OFFSETS << std::endl
+// 				<< "FIFO No Offset:  " << W_FIFO_NO  << std::endl
+// 				<< "FIFO Sim.:       " << W_FIFO_SIM  << std::endl
+// 				<< "FPNS:            " << W_FPNS << std::endl;
+				
+	
+	return 0;
+}
 
 int main(int argc, char **argv) {
 
@@ -422,8 +536,9 @@ int main(int argc, char **argv) {
 					<< "------------------------------------------------------------------------" << std::endl
 					<< std::endl;
 
-
-	if (conf.example()) {
+	if (conf.evalEventOrder()) {
+		analyseEventOrders(conf);
+	} else if (conf.example()) {
 		analyseExample(conf);
 	} else if (analyseConfiguration(conf)) {
 		std::cerr << "Error: configuration could not be analysed." << std::endl;

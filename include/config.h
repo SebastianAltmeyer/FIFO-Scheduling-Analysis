@@ -41,6 +41,7 @@ class Config
 	
 	bool simulation();
 	bool example();
+	bool evalEventOrder();
 	
 	float getUtilStep();
 	float getUtilStart();
@@ -56,6 +57,12 @@ class Config
 	int getNrOfTaskSets();
 	int getNrOfTasks();
 	int getSeed();
+	int getOOF();
+	
+	int getSimulationRuns();
+	float getRTFactor();
+	int getSimulLength();
+	
   private:
 
 	std::string _configName;
@@ -74,6 +81,7 @@ class Config
 	int _nrOfTasks;
 	int _nrOfTaskSets;
 	int _optSteps;
+	int _simulationRuns;
 	
 	int _verbose;
 		
@@ -83,10 +91,13 @@ class Config
 	bool _weighted;
 	bool _simulation;
 	bool _example;
+	bool _eventOrder;
 	
 	int _randSeed;
 	
 	float _deadlineFac;
+	float _rtFactor;
+	int _simulationLength;
 	
 	int _scale;
 	int _oof;

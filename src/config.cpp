@@ -26,9 +26,13 @@ Config::Config() {
 	_oom = 2;
 	_simulation = false;
 	_example = false;
+	_eventOrder = false;
 	
 	_optSteps = 0;
 	_outFile = "result";
+	_simulationRuns = 100;
+	_simulationLength = -1;
+	_rtFactor = 0.3;
 }
 
 int Config::readConfig(std::string filename) {
@@ -119,6 +123,13 @@ int Config::parseConfig(int start, int nr, char **argv) {
 			} else {
 				std::cerr << "No period factor provided." << std::endl;
 			}
+		} else if (!strcmp(argv[i], "-gran")) {
+			if (i + 1 < nr) {
+				_oof = atoi(argv[i+1]);
+				i++;
+			} else {
+				std::cerr << "No granularity provided." << std::endl;
+			}
 		}	else if (!strcmp(argv[i], "-example")) {
 			_example = true;
 		}	else if (!strcmp(argv[i], "-v")) {
@@ -133,6 +144,26 @@ int Config::parseConfig(int start, int nr, char **argv) {
 			VERBOSE = -1;
 		}	else if (!strcmp(argv[i], "-simulation")) {
 			_simulation = true;
+		}	else if (!strcmp(argv[i], "-evalEventOrder")) {
+			_eventOrder = true;
+			if (i + 1 < nr) {
+				_simulationRuns = atoi(argv[i+1]);
+				i++;
+			} else {
+				std::cerr << "No number of simulation runs provided." << std::endl;
+			}
+			if (i + 1 < nr) {
+				_simulationLength = atoi(argv[i+1]);
+				i++;
+			} else {
+				std::cerr << "No simulation length provided." << std::endl;
+			}
+			if (i + 1 < nr) {
+				_rtFactor = atof(argv[i+1]);
+				i++;
+			} else {
+				std::cerr << "No runtime factor provided." << std::endl;
+			}
 		}	else if (!strcmp(argv[i], "-seed")) {
 			if (i + 1 < nr) {
 				_randSeed = atoi(argv[i+1]);
@@ -238,7 +269,7 @@ Config::~Config() {
 }
 
 bool Config::simulation() {
-	return _simulation;
+	return _simulation || _periodType != "random";
 }
 
 bool Config::example() {
@@ -323,7 +354,7 @@ int Config::genTaskSet(Taskset &ts, std::string tsName, float util) {
 	float utilVec[size];
 	UUnifast(size, util, utilVec);
 
-	if (_periodType == "looselyHarmoic") {
+	if (_periodType == "lHarmonic") {
 		periods[0] = _scale*pow(10,(rand()/(float)RAND_MAX));
 		periods[0] = (periods[0]/_oof)*_oof;
 		for (int i = 0 ; i < size; i++) {
@@ -372,7 +403,7 @@ int Config::genTaskSet(Taskset &ts, std::string tsName, float util) {
 		deadlineFinal[i] = deadlines[priorities[i]];
 		periodFinal[i] = periods[priorities[i]];
 		execTimesFinal[i] = execTimes[priorities[i]];
-		offsetFinal[i] = rand() % periodFinal[i];
+		offsetFinal[i] = ((rand() % periodFinal[i])/_oof)*_oof;
 	}
 
 	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal);
@@ -458,4 +489,24 @@ std::string Config::getOptType() {
 
 std::string Config::getOptValue() {
 	return _optValue;
+}
+
+int Config::getOOF() {
+	return _oof;
+}
+
+int Config::getSimulationRuns() {
+	return _simulationRuns;
+}
+
+float Config::getRTFactor() {
+	return _rtFactor;
+}
+
+int Config::getSimulLength() {
+	return _simulationLength;
+}
+
+bool Config::evalEventOrder() {
+	return _eventOrder;
 }

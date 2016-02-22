@@ -1,23 +1,37 @@
 #!/bin/sh
 
-DEFAULTRESULT="../output/resultBase"
+DEFAULTTASKSETS="1000"
 
-DEFAULTNROFTASKS="5"
-DEFAULTTASKSETS="100"
+# for PERIODTYPE in "random" "lHarmonic" "harmonic" 
+# do
+# 	WENAME=../results/res_$PERIODTYPE"_tasks_we"
+# 
+# 	echo ""  > $WENAME 
+# 	
+# 	for TASKS in 2 4 6 8 10 12 16 20
+# 	do
+# 		../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -nrOfTasks $TASKS -periodType $PERIODTYPE -opt 1000  -o ../tmp/res_$PERIODTYPE"_"$TASKS 
+# 
+# 		FILENAME=../tmp/res_$PERIODTYPE"_"$TASKS"_we"
+# 		TEMPFile=../tmp/tmp
+# 		
+# 		echo $TASKS  > $TEMPFile 
+# 		paste $TEMPFile $FILENAME >> $WENAME
+# 		rm $TEMPFile
+# 	done
+# done
 
-echo "Compute Results for base configuration"
-
-for PERIODTYPE in "random" "looselyHarmoic" "harmonic" 
+for PERIODTYPE in "harmonic" 
 do
-	WENAME=../results/resBase_$PERIODTYPE"_tasks_we"
+	WENAME=../results/res_$PERIODTYPE"_tasks_we"
 
 	echo ""  > $WENAME 
 	
 	for TASKS in 2 4 6 8 10 12 16 20
 	do
-		../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -nrOfTasks $TASKS -periodType $PERIODTYPE -opt 1000 -oom 2 -o ../tmp/resBase_$PERIODTYPE"_"$TASKS 
+		../bin/rtAnalyser -def config -taskSets $DEFAULTTASKSETS -nrOfTasks $TASKS -periodType $PERIODTYPE -opt 1000  -o ../tmp/res_$PERIODTYPE"_"$TASKS -oom 6
 
-		FILENAME=../tmp/resBase_$PERIODTYPE"_"$TASKS"_we"
+		FILENAME=../tmp/res_$PERIODTYPE"_"$TASKS"_we"
 		TEMPFile=../tmp/tmp
 		
 		echo $TASKS  > $TEMPFile 

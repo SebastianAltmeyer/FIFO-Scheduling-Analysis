@@ -1,5 +1,5 @@
-#ifndef analysisSim_H
-#define analysisSim_H
+#ifndef analysisSimFPNS_H
+#define analysisSimFPNS_H
 
 #include <limits> 
 #include <queue>
@@ -7,10 +7,10 @@
 #include "taskset.h"
 #include "analysis.h"
 
-class AnalysisSim: public Analysis  {
+class AnalysisSimFPNS: public Analysis  {
 	public:
-		AnalysisSim();
-		~AnalysisSim();
+		AnalysisSimFPNS();
+		~AnalysisSimFPNS();
 		int analyse(Taskset &taskset);
 		int simulate ();
 		int simulate (Taskset &taskset, float rtFactor, std::vector<int> &order,longint_t length);
@@ -21,10 +21,7 @@ private:
 			int releaseTime;
 			int deadline;
 			bool operator<(const Job& rightJ) const {
-				if (releaseTime == rightJ.releaseTime) {
-					return taskindex > rightJ.taskindex;
-				}
-			  return releaseTime > rightJ.releaseTime;
+			  return taskindex > rightJ.taskindex;
 			}
 		};
 		
@@ -44,7 +41,6 @@ private:
 					return job.taskindex > rightE.job.taskindex;
 				}
 			  return time > rightE.time;
-			  
 			}
 		};
 };

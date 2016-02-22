@@ -29,9 +29,7 @@ struct Statistics {
 	int FIFO_OFFSETS;
 	int FIFO_NO;
 	int FIFO_SIM;
-	int FPNS_OFFSETS_OPT;
-	int FPNS_OFFSETS;
-	int FPNS_NO;
+	int FPNS;
 };
 
 // add performance stat struct
