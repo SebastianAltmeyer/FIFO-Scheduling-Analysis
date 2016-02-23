@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DEFAULTTASKSETS="100"
+DEFAULTTASKSETS="1000"
 
 for PERIODTYPE in "random" "lHarmonic" "harmonic" 
 do
