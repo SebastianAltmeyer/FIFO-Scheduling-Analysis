@@ -16,8 +16,8 @@ set xlabel "Granularity"
 set ylabel "Weighted measure"
 
 plot  '../results/res_random_gran_we' using 1:2 title "FPPS" lw 3, \
-		'' using 1:7 title "FPNS" lw 3, \
-		'' using 1:3 title "FIFO opt. offsets" lw 3, \
+		'' using 1:7 title "FPNS" pt 7 lw 3, \
+		'' using 1:3 title "FIFO opt. offsets" pt 8 lw 3, \
 		'' using 1:4 title "FIFO given offsets" lw 3, \
 		'' using 1:5 title "FIFO aperiodic" lw 3
 
@@ -42,8 +42,8 @@ set xlabel "Granularity"
 set ylabel "Weighted measure"
 
 plot  '../results/res_harmonic_gran_we' using 1:2 title "FPPS" lw 3, \
-		'' using 1:7 title "FPNS" lw 3, \
-		'' using 1:3 title "FIFO opt. offsets" lw 3, \
+		'' using 1:7 title "FPNS" pt 7 lw 3, \
+		'' using 1:3 title "FIFO opt. offsets" pt 8 lw 3, \
 		'' using 1:4 title "FIFO given offsets" lw 3, \
 		'' using 1:5 title "FIFO aperiodic" lw 3
 
@@ -66,7 +66,7 @@ set xlabel "Granularity"
 set ylabel "Weighted measure"
 
 plot  '../results/res_lHarmonic_gran_we' using 1:2 title "FPPS" lw 3, \
-		'' using 1:7 title "FPNS" lw 3, \
-		'' using 1:3 title "FIFO opt. offsets" lw 3, \
+		'' using 1:7 title "FPNS" pt 7 lw 3, \
+		'' using 1:3 title "FIFO opt. offsets" pt 8 lw 3, \
 		'' using 1:4 title "FIFO given offsets" lw 3, \
 		'' using 1:5 title "FIFO aperiodic" lw 3
