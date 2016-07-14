@@ -1,4 +1,4 @@
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'nrOrdersLHarmonic.pdf'
 
 set xtics rotate out
@@ -19,10 +19,12 @@ set ylabel "# of different event orders"
 set yrange [0:50]
 set boxwidth 1 relative
 
-plot for [COL=2:4] '../results/resultsEO_lHarmonic_FIFO' using COL:xticlabels(1) title columnheader
+plot '../results/resultsEO_lHarmonic_FIFO' using 2:xticlabels(1) title columnheader fillstyle pattern 2, \
+     '../results/resultsEO_lHarmonic_FIFO' using 3:xticlabels(1) title columnheader fillstyle pattern 3, \
+     '../results/resultsEO_lHarmonic_FIFO' using 4:xticlabels(1) title columnheader fillstyle pattern 4
 
 
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'nrOrdersHarmonic.pdf'
 
 set xtics rotate out
@@ -43,4 +45,6 @@ set ylabel "# of different event orders"
 set yrange [0:400]
 set boxwidth 1 relative
 
-plot for [COL=2:4] '../results/resultsEO_harmonic_FIFO' using COL:xticlabels(1) title columnheader
+plot '../results/resultsEO_harmonic_FIFO' using 2:xticlabels(1) title columnheader fillstyle pattern 2, \
+     '../results/resultsEO_harmonic_FIFO' using 3:xticlabels(1) title columnheader fillstyle pattern 3, \
+     '../results/resultsEO_harmonic_FIFO' using 4:xticlabels(1) title columnheader fillstyle pattern 4

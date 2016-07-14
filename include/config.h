@@ -62,6 +62,9 @@ class Config
 	int getSimulationRuns();
 	float getRTFactor();
 	int getSimulLength();
+        
+        int getNonPeriodicTasks();
+        int getNonHarmonicTasks();
 	
   private:
 
@@ -74,6 +77,9 @@ class Config
 	std::string  _periodType;
 	
 	std::string _outFile;
+        
+        int _nonHarmonicTasks;
+        int _nonPeriodicTasks;
 	
 	float _utilStart;
 	float _utilEnd;

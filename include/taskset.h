@@ -18,7 +18,7 @@ public:
 	Taskset();
 	~Taskset();
 	
-	int init(std::string name, 	int size, int* priority, longint_t* deadline, longint_t* period, longint_t* execTime, longint_t* offset);
+	int init(std::string name, 	int size, int* priority, longint_t* deadline, longint_t* period, longint_t* execTime, longint_t* offset, bool* sporadic);
 
 	void setName(std::string);
 	std::string getName();
@@ -50,6 +50,10 @@ public:
 	void setResponseTime(int id, longint_t rt);
 	longint_t getResponseTime(int id);
 
+        bool isSporadic(int id);
+
+        void setSporadic(int id, bool sporadic);
+        
 	int print();
 	
 	int print(std::string fileName);
@@ -69,6 +73,7 @@ private:
 	longint_t* _execTime;  	// C_i 
 	longint_t* _offset; 		// O
 	longint_t* _responseTime;  	// R_i
+	bool* _sporadic;  	    // sporadic
 	
 	longint_t _hyperperiod;
 };

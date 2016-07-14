@@ -33,6 +33,8 @@ Config::Config() {
 	_simulationRuns = 100;
 	_simulationLength = -1;
 	_rtFactor = 0.3;
+        _nonHarmonicTasks = 0;
+        _nonPeriodicTasks = 0;
 }
 
 int Config::readConfig(std::string filename) {
@@ -247,6 +249,20 @@ int Config::parseConfig(int start, int nr, char **argv) {
 			} else {
 				std::cerr << "No output file given." << std::endl;
 			}
+                } else if (!strcmp(argv[i], "-nH")) {
+			if (i + 1 < nr) {
+				_nonHarmonicTasks = atoi(argv[i+1]);;
+				i++;
+			} else {
+				std::cerr << "No number of non-harmonic tasks file given." << std::endl;
+			}
+                } else if (!strcmp(argv[i], "-nP")) {
+			if (i + 1 < nr) {
+				_nonPeriodicTasks = atoi(argv[i+1]);;
+				i++;
+			} else {
+				std::cerr << "No number of non-periodic tasks file given." << std::endl;
+			}
 		} else if (!strcmp(argv[i], "--help")) {
 			_printHelp = true;
 		} else {
@@ -269,7 +285,7 @@ Config::~Config() {
 }
 
 bool Config::simulation() {
-	return _simulation || _periodType != "random";
+	return _simulation;
 }
 
 bool Config::example() {
@@ -315,26 +331,30 @@ int Config::fillTaskSet(Taskset &ts) {
 	longint_t* periodFinal = new longint_t[size];
 	longint_t* execTimesFinal = new longint_t[size];
 	longint_t* offsetFinal = new longint_t[size];
+        bool* sporadicFinal = new bool[size];
 
 	priorityFinal[0] = 0;
 	deadlineFinal[0] = 4;
 	periodFinal[0] = 4;
 	execTimesFinal[0] = 1;
 	offsetFinal[0] = 0;
+        sporadicFinal[0] = false;
 	
 	priorityFinal[1] = 1;
 	deadlineFinal[1] = 4;
 	periodFinal[1] = 4;
 	execTimesFinal[1] = 2;
 	offsetFinal[1] = 2;
+        sporadicFinal[1] = false;
 	
 	priorityFinal[2] = 2;
 	deadlineFinal[2] = 9;
 	periodFinal[2] = 20;
 	execTimesFinal[2] = 4;
 	offsetFinal[2] = 2;
+        sporadicFinal[2] = false;
 
-	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal);
+	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal,sporadicFinal);
 
 	return 0;
 }
@@ -354,20 +374,28 @@ int Config::genTaskSet(Taskset &ts, std::string tsName, float util) {
 	float utilVec[size];
 	UUnifast(size, util, utilVec);
 
+        std::sort(utilVec,utilVec+size);
+        
+        int iStart = 0;
+        for (; iStart < _nonHarmonicTasks; iStart++) {
+                periods[iStart] = _scale*pow(2,(rand()/(float)RAND_MAX)*_oom);
+		periods[iStart] = (periods[iStart]/_oof)*_oof;
+        }
+        
 	if (_periodType == "lHarmonic") {
-		periods[0] = _scale*pow(10,(rand()/(float)RAND_MAX));
-		periods[0] = (periods[0]/_oof)*_oof;
-		for (int i = 0 ; i < size; i++) {
-			periods[i] = periods[0]*_oom;
+		periods[iStart] = _scale*pow(10,(rand()/(float)RAND_MAX));
+		periods[iStart] = (periods[iStart]/_oof)*_oof;
+		for (int i = iStart ; i < size; i++) {
+			periods[i] = periods[iStart]*_oom;
 		}
 	} else if (_periodType == "harmonic") {
-		periods[0] = _scale*pow(10,(rand()/(float)RAND_MAX));
-		periods[0] = (periods[0]/_oof)*_oof;
-		for (int i = 0 ; i < size; i++) {
-			periods[i] = periods[0]* pow(2,(rand() % _oom));
+		periods[iStart] = _scale*pow(10,(rand()/(float)RAND_MAX));
+		periods[iStart] = (periods[iStart]/_oof)*_oof;
+		for (int i = iStart ; i < size; i++) {
+			periods[i] = periods[iStart]* pow(2,(rand() % _oom));
 		}
 	} else {
-		for (int i = 0 ; i < size; i++) {
+		for (int i = iStart ; i < size; i++) {
 			periods[i] = _scale*pow(2,(rand()/(float)RAND_MAX)*_oom);
 			periods[i] = (periods[i]/_oof)*_oof;
 		}
@@ -393,6 +421,7 @@ int Config::genTaskSet(Taskset &ts, std::string tsName, float util) {
 	longint_t* periodFinal = new longint_t[size];
 	longint_t* execTimesFinal = new longint_t[size];
 	longint_t* offsetFinal = new longint_t[size];
+        bool* sporadicFinal = new bool[size];
 
 	// order tasks in deadline monotonic order
 	SortTasks(priorities, deadlines, size);
@@ -404,9 +433,16 @@ int Config::genTaskSet(Taskset &ts, std::string tsName, float util) {
 		periodFinal[i] = periods[priorities[i]];
 		execTimesFinal[i] = execTimes[priorities[i]];
 		offsetFinal[i] = ((rand() % periodFinal[i])/_oof)*_oof;
+                sporadicFinal[i] = false;
 	}
 
-	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal);
+	
+        for (int i = 0; i < _nonPeriodicTasks ; i++)
+	{
+		sporadicFinal[i] = true;
+	}
+	
+	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal, sporadicFinal);
 
 	return 0;
 }
@@ -436,7 +472,7 @@ void Config::swap(int* value, int i1, int i2) {
 }
 
 void Config::SortTasks(int prior[], longint_t value[], int len) {
-	    for (int pass=0; pass<len-1; pass++) {
+    for (int pass=0; pass<len-1; pass++) {
         int indexSm = pass;  // assume this is smallest
 
         //--- Look over remaining elements to find smallest.
@@ -509,4 +545,12 @@ int Config::getSimulLength() {
 
 bool Config::evalEventOrder() {
 	return _eventOrder;
+}
+
+int Config::getNonPeriodicTasks() {
+        return _nonPeriodicTasks;
+}
+
+int Config::getNonHarmonicTasks() {
+        return _nonHarmonicTasks;
 }

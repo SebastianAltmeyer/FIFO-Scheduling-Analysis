@@ -8,6 +8,7 @@ Taskset::Taskset() {
 	_execTime = NULL;
 	_offset = NULL;
 	_responseTime = NULL;
+        _sporadic = NULL;
 };
 
 Taskset::~Taskset() {
@@ -19,9 +20,10 @@ Taskset::~Taskset() {
 	delete[] _offset;
 	delete[] _execTime;
 	delete[] _responseTime;
+        delete[] _sporadic;
 };
 
-int Taskset::init(std::string name, int size, int* priority, longint_t* deadline, longint_t* period, longint_t* execTime, longint_t* offset) {
+int Taskset::init(std::string name, int size, int* priority, longint_t* deadline, longint_t* period, longint_t* execTime, longint_t* offset, bool* sporadic) {
 	
 	_size = size;
 	_priority = priority;
@@ -31,7 +33,8 @@ int Taskset::init(std::string name, int size, int* priority, longint_t* deadline
 	_offset = offset;
 	_name = name;
 	_responseTime = new longint_t[size]();
-
+        _sporadic = sporadic;
+        
 	return 0;
 }
 
@@ -77,6 +80,14 @@ void Taskset::setDeadline(int id, longint_t deadline) {
 
 int Taskset::getSize() {
 	return _size;
+}
+
+bool Taskset::isSporadic(int id) {
+        return _sporadic[id];
+}
+
+void Taskset::setSporadic(int id, bool sporadic) {
+        _sporadic[id] = sporadic;
 }
 
 void Taskset::setSize(int size) {
@@ -158,6 +169,9 @@ longint_t Taskset::computeLCM(longint_t a, longint_t b)
 
 longint_t Taskset::computeMinOffset(int id1, int id2) {
   
+        if (_sporadic[id1] || _sporadic[id2])
+                return 0;
+        
 	int gcd = computeGCD(getPeriod(id1), getPeriod(id2));
 	int diff = getOffset(id1) - getOffset(id2);
 	int diffInv = getOffset(id2) - getOffset(id1);
@@ -173,6 +187,9 @@ longint_t Taskset::computeMinOffset(int id1, int id2) {
 
 longint_t Taskset::computeMinOffsetPrime(int id1, int id2) {
   
+        if (_sporadic[id1] || _sporadic[id2])
+                return 1;
+        
 	int gcd = computeGCD(getPeriod(id1), getPeriod(id2));
 	int diff = getOffset(id1) - getOffset(id2);
 	int diffInv = getOffset(id2) - getOffset(id1);

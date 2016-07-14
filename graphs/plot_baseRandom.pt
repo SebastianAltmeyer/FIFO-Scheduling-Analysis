@@ -1,4 +1,4 @@
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'baseConfigurationRandom.pdf'
 
 set bar 1.000000

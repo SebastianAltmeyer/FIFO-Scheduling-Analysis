@@ -1,4 +1,4 @@
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'oom-Random.pdf'
 
 set bar 1.000000
@@ -23,7 +23,7 @@ plot  '../results/res_random_oom_we' using 1:2 title "FPPS" lw 3, \
 
 
 
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'oom-harmonic.pdf'
 
 set bar 1.000000
@@ -47,7 +47,7 @@ plot  '../results/res_harmonic_oom_we' using 1:2 title "FPPS" lw 3, \
 		'' using 1:5 title "FIFO aperiodic" lw 3
 
 
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'oom-lHarmonic.pdf'
 
 set bar 1.000000

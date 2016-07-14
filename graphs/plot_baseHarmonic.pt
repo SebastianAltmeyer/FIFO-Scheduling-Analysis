@@ -1,4 +1,4 @@
-set terminal pdf size 5,3.75
+set terminal pdf size 5,3.5
 set output 'baseConfigurationHarmonic.pdf'
 
 set bar 1.000000
@@ -20,4 +20,4 @@ plot  '../results/results_harmonic_FPPS' using 1:2 title "FPPS" ls 1 lw 3, \
 		'../results/results_harmonic_FIFO_OFFSETS_OPT' using 1:2 title "FIFO opt. offsets" pt 8 lw 3, \
 		'../results/results_harmonic_FIFO_OFFSETS' using 1:2  title "FIFO given offsets"  lw 3, \
 		'../results/results_harmonic_FIFO_NO' using 1:2 title "FIFO aperiodic" lw 3, \
-		'../results/results_harmonic_FIFO_SIM' using 1:2 title "FIFO simulation" lw 3
+		'../results/results_harmonic_FIFO_SIM' using 1:2 title "FIFO simulation" lc 7 lw 3
