@@ -350,9 +350,7 @@ int analyseSingleTaskSet(Config &conf) {
         Taskset ts;
         
         conf.loadTaskSet(ts);
-        
-	if (VERBOSE > -1) {std::cout << "Start Analysis." << std::endl;}
-	
+        	
         stats.FPPS = 0;
 
         stats.FIFO_OFFSETS_OPT = 0;
@@ -362,18 +360,12 @@ int analyseSingleTaskSet(Config &conf) {
 
         stats.FPNS = 0;
         
-        if (VERBOSE > -1) {std::cout << " Analyse task set." << std::endl;}
+        if (VERBOSE > -1) {std::cout << " Analyse task set " <<ts.getName() << ". " << std::endl;}
                                         
         if (VERBOSE > 1) ts.print();
 
         analyseTaskSet(conf,stats,ts);
 
-        std::cout << "  Schedulability results: " << std::endl
-                << "   FIFO_OFFSETS_OPT: " << stats.FIFO_OFFSETS_OPT << std::endl
-                << "   FIFO_OFFSETS: " << stats.FIFO_OFFSETS << std::endl
-                << "   FIFO_NO: " << stats.FIFO_NO << std::endl
-                << "   FIFO_SIM: " << stats.FIFO_SIM << std::endl
-                << std::endl;
 	
 	return 0;
 }

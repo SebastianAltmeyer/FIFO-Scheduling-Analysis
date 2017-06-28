@@ -371,7 +371,7 @@ int Config::loadTaskSet(Taskset &ts) {
 	std::string tsName;
         int size;
         
-	std::cout << "Reading "<< _tasksetFileName << "." << std::endl;
+	std::cout << " Reading "<< _tasksetFileName << "." << std::endl;
 
         std::ifstream fin;
 
@@ -379,10 +379,10 @@ int Config::loadTaskSet(Taskset &ts) {
 
         
         fin >> tsName;
-        std::cout << "   Name: " << tsName << std::endl;
+//         std::cout << "   Name: " << tsName << std::endl;
         
         fin >> size;
-        std::cout << "   Size: " << size << std::endl;
+//         std::cout << "   Size: " << size << std::endl;
         
 	int* priorityFinal = new int[size];
 	longint_t* deadlineFinal = new longint_t[size];
@@ -401,18 +401,18 @@ int Config::loadTaskSet(Taskset &ts) {
                     >> offsetFinal[i]
                     >> sporadicFinal[i];
                     
-                std::cout << "   TS Parameters: " 
-                     << priorityFinal[i] << " " 
-                     << deadlineFinal[i] << " " 
-                     << periodFinal[i] << " " 
-                     << execTimesFinal[i] << " " 
-                     << offsetFinal[i] << " " 
-                     << sporadicFinal[i] << std::endl;
+//                 std::cout << "   TS Parameters: " 
+//                      << priorityFinal[i] << " " 
+//                      << deadlineFinal[i] << " " 
+//                      << periodFinal[i] << " " 
+//                      << execTimesFinal[i] << " " 
+//                      << offsetFinal[i] << " " 
+//                      << sporadicFinal[i] << std::endl;
                     
         }
 	
 	
-        std::cout << "Reading done." << std::endl;
+//         std::cout << "Reading done." << std::endl;
         fin.close();
         
 	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal,sporadicFinal);
