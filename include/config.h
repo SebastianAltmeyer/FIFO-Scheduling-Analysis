@@ -38,9 +38,11 @@ class Config
 	
 	int genTaskSet(Taskset &ts, std::string tsName, float util) ;
 	int fillTaskSet(Taskset &ts) ;
+	int loadTaskSet(Taskset &ts) ;
 	
 	bool simulation();
 	bool example();
+        bool singleTS();
 	bool evalEventOrder();
 	
 	float getUtilStep();

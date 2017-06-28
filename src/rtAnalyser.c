@@ -344,6 +344,41 @@ int analyseConfiguration(Config &conf) {
 	return 0;
 }
 
+int analyseSingleTaskSet(Config &conf) {
+
+	Statistics stats;
+        Taskset ts;
+        
+        conf.loadTaskSet(ts);
+        
+	if (VERBOSE > -1) {std::cout << "Start Analysis." << std::endl;}
+	
+        stats.FPPS = 0;
+
+        stats.FIFO_OFFSETS_OPT = 0;
+        stats.FIFO_OFFSETS = 0;
+        stats.FIFO_NO = 0;
+        stats.FIFO_SIM = 0;
+
+        stats.FPNS = 0;
+        
+        if (VERBOSE > -1) {std::cout << " Analyse task set." << std::endl;}
+                                        
+        if (VERBOSE> -1) ts.print();
+
+        analyseTaskSet(conf,stats,ts);
+
+        std::cout << "  Schedulability results: " << std::endl
+                << "   FIFO_OFFSETS_OPT: " << stats.FIFO_OFFSETS_OPT << std::endl
+                << "   FIFO_OFFSETS: " << stats.FIFO_OFFSETS << std::endl
+                << "   FIFO_NO: " << stats.FIFO_NO << std::endl
+                << "   FIFO_SIM: " << stats.FIFO_SIM << std::endl
+                << std::endl;
+	
+	return 0;
+}
+
+
 int analyseExample(Config &conf) {
 
 	Statistics stats;
@@ -540,6 +575,8 @@ int main(int argc, char **argv) {
 		analyseEventOrders(conf);
 	} else if (conf.example()) {
 		analyseExample(conf);
+	} else if (conf.singleTS()) {
+		analyseSingleTaskSet(conf);
 	} else if (analyseConfiguration(conf)) {
 		std::cerr << "Error: configuration could not be analysed." << std::endl;
 		return 0;

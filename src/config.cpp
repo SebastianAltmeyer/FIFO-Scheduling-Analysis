@@ -292,6 +292,10 @@ bool Config::example() {
 	return _example;
 }
 
+bool Config::singleTS() {
+	return _singleTS;
+}
+
 int Config::printHelp() {
 
 	if (!_printHelp)
@@ -354,6 +358,62 @@ int Config::fillTaskSet(Taskset &ts) {
 	offsetFinal[2] = 2;
         sporadicFinal[2] = false;
 
+	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal,sporadicFinal);
+
+	return 0;
+}
+
+
+int Config::loadTaskSet(Taskset &ts) {
+
+
+	std::string tsName;
+        int size;
+        
+	std::cout << "Reading "<< _tasksetFileName << "." << std::endl;
+
+        std::ifstream fin;
+
+	fin.open(_tasksetFileName.c_str());
+
+        
+        fin >> tsName;
+        std::cout << "   Name: " << tsName << std::endl;
+        
+        fin >> size;
+        std::cout << "   Size: " << size << std::endl;
+        
+	int* priorityFinal = new int[size];
+	longint_t* deadlineFinal = new longint_t[size];
+	longint_t* periodFinal = new longint_t[size];
+	longint_t* execTimesFinal = new longint_t[size];
+	longint_t* offsetFinal = new longint_t[size];
+        bool* sporadicFinal = new bool[size];
+
+        
+        for (int i = 0; i < size; i++) {
+                
+                fin >> priorityFinal[i] 
+                    >> deadlineFinal[i] 
+                    >> periodFinal[i]
+                    >> execTimesFinal[i]
+                    >> offsetFinal[i]
+                    >> sporadicFinal[i];
+                    
+                std::cout << "   TS Parameters: " 
+                     << priorityFinal[i] << " " 
+                     << deadlineFinal[i] << " " 
+                     << periodFinal[i] << " " 
+                     << execTimesFinal[i] << " " 
+                     << offsetFinal[i] << " " 
+                     << sporadicFinal[i] << std::endl;
+                    
+        }
+	
+	
+        std::cout << "Reading done." << std::endl;
+        fin.close();
+        
 	ts.init(tsName, size, priorityFinal, deadlineFinal, periodFinal, execTimesFinal, offsetFinal,sporadicFinal);
 
 	return 0;
