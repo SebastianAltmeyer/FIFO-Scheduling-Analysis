@@ -9,6 +9,7 @@ Config::Config() {
 	_verbose = 0;
 	_printHelp = false;
 	_weighted = false;
+        _singleTS = false;
 	_tasksetFileName = "";
 	_periodType  = "";
 

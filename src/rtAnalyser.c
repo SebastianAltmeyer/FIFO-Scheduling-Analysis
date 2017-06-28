@@ -364,7 +364,7 @@ int analyseSingleTaskSet(Config &conf) {
         
         if (VERBOSE > -1) {std::cout << " Analyse task set." << std::endl;}
                                         
-        if (VERBOSE> -1) ts.print();
+        if (VERBOSE > 1) ts.print();
 
         analyseTaskSet(conf,stats,ts);
 
