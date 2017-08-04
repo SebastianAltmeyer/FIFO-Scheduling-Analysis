@@ -22,11 +22,11 @@ int AnalysisFIFO::analyse (Taskset &taskset) {
 	}
 	
 	for (int id = 0; id < taskset.getSize() && _schedulable; id++) {
-	
+                _rt[id] = 0;
 		checkSchedulability(id,L);
 
-		if (VERBOSE > 2) {
-			std::cout << "  Response Time R_" << id << " =  " << _rt[id]  << ". D_" << id << " = " << taskset.getDeadline(id) << "." << std::endl;
+		if (VERBOSE > 1) {
+			std::cout << " Worst Case Response Time R_" << id << " =  " << _rt[id]  << ". D_" << id << " = " << taskset.getDeadline(id) << "." << std::endl;
 		}
 	}
   
@@ -71,10 +71,14 @@ int AnalysisFIFO::checkSchedulability(int i, longint_t L) {
 	for(std::set<longint_t>::iterator it=Q.begin(); _schedulable && it!=Q.end(); ++it) {
 		longint_t t = *it;;
 		longint_t PD = computePD(t,rij,i);
+                
+                _rt[i] = std::max(PD + t - rij, _rt[i]); 
+
+                
 		if (dij - t < PD) {
 			if (VERBOSE > 2) {
 				std::cout << "Miss:  PD("<<t<<","<<rij<<","<<i<<")=" << PD << " dij=" << dij << " t="<< t << " dij-t=" << dij - t <<  std::endl;
-	        } 
+                        }
 			_schedulable = false;
 		} else {
 			if (VERBOSE > 2) {
